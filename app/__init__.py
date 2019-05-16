@@ -6,6 +6,7 @@ from flask import Flask
 def create_app(test_config=None):
     """Create and configure the app"""
     app = Flask(__name__, instance_relative_config=True)
+
     # Not actually mapping yet
     app.config.from_mapping(
         SECRET_KEY='dev',
@@ -24,9 +25,9 @@ def create_app(test_config=None):
     except OSError:
         pass
 
-    # a simple page that says hello
-    @app.route('/hello')
-    def hello():
+    # a simple index page that says hello
+    @app.route('/')
+    def index():
         return 'Hello, World!'
 
     from . import db

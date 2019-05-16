@@ -2,9 +2,23 @@
 
 A starter kit including Flask and Psycopg2 without SQLAlchemy
 
+## Requirements
+
+- `Python>=3.7.3` [General](https://www.python.org/downloads/release/python-373/)
+- `PostgreSQL>=11.2` [General](https://www.postgresql.org/download/) [macOS](https://postgresapp.com/)
+
+## Installation
+
+```bash
+# flask-psycopg2-starter/
+$ make install
+[...]
+```
+
 ## Routes
 
 ```bash
+# flask-psycopg2-starter/
 $ flask routes
 Endpoint       Methods    Rule
 -------------  ---------  -----------------------
@@ -24,6 +38,7 @@ If you are starting with this boilerplate to build an application for prod deplo
 If you run into permission issues like below,
 
 ```bash
+# flask-psycopg2-starter/
 $ make install
 virtualenv venv
 make: ./make-venv: Permission denied

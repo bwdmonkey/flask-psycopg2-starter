@@ -1,6 +1,6 @@
 import psycopg2
-
 import click
+from psycopg2 import extras
 from flask import current_app, g
 from flask.cli import with_appcontext
 from configparser import ConfigParser
@@ -19,7 +19,7 @@ def init_db():
     db, cur = get_db()
     with current_app.open_resource("schema.sql") as f:
         cur.execute(f.read())
-    return cur.fetchone()[0] # DB Version
+    return cur.fetchone()['version'] # DB Version
 
 
 @click.command("init-db")
@@ -66,7 +66,7 @@ def get_db():
     if ("db" not in g) or ("cur" not in g):
         db_config = get_config()
         g.db = psycopg2.connect(**db_config) # db connection
-        g.cur = g.db.cursor() # db operation cursor
+        g.cur = g.db.cursor(cursor_factory=extras.DictCursor) # operation cursor
     return g.db, g.cur
 
 
@@ -77,4 +77,5 @@ def close_db(e=None):
         cur.close()
     db = g.pop("db", None)
     if db is not None:
+        db.commit()
         db.close()

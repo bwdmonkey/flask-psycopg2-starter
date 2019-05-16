@@ -1,14 +1,13 @@
 SHELL=./make-venv
 
-all: ls
+all: help
 
-# List all commands
-.PHONY: ls
-ls:
-	@$(MAKE) -pRrq -f $(lastword $(MAKEFILE_LIST)) : 2>/dev/null | awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' | sort | egrep -v -e '^[^[:alnum:]]' -e '^$@$$' | xargs
+.PHONY: help
+help: Makefile
+	@echo "Choose a command run:"
+	@(sed -n "s/^## //p" Makefile | column -t -s ":" | sed -e "s/^/  /")
 
-
-### install: installs dependencies under
+## install: installs dependencies under venv
 .PHONY: install
 install:
 	python3 -m venv venv
@@ -19,6 +18,7 @@ install:
 post-install:
 	pip3 install -r requirements.txt
 
+## clean: remove venv directory
 .PHONY: clean
 clean:
 	rm -rf venv

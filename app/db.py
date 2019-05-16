@@ -6,43 +6,41 @@ from flask.cli import with_appcontext
 from configparser import ConfigParser
 
 
-cursor = None
-
 def init_app(app):
+    """Initalize flask CLI"""
     app.teardown_appcontext(close_db)
     app.cli.add_command(init_db_command)
     app.cli.add_command(seed_db_command)
 
 
 def init_db():
-    global cursor
-    db = get_db()
-    cursor = db.cursor()
+    """Helper for init_db_command. Executes schema.sql"""
+    # global cursor
+    db, cur = get_db()
     with current_app.open_resource("schema.sql") as f:
-        cursor.execute(f.read())
-    return cursor.fetchone()[0] # DB Version
+        cur.execute(f.read())
+    return cur.fetchone()[0] # DB Version
 
 
 @click.command("init-db")
 @with_appcontext
 def init_db_command():
-    """CLI command: Clear the existing data and create new tables."""
+    """Initializes database and create tables."""
     db_version = init_db()
     click.echo("Database initialized. DB version:")
     click.echo("    {0}".format(db_version))
 
 def seed_db():
-    global cursor
-    db = get_db()
-    cursor = db.cursor()
+    """Helper for seed_db_command. Executes seed.sql"""
+    db, cur = get_db()
     with current_app.open_resource("seed.sql") as f:
-        cursor.execute(f.read())
+        cur.execute(f.read())
 
 
 @click.command("seed-db")
 @with_appcontext
 def seed_db_command():
-    """CLI command: Inserts seed data into the database"""
+    """Inserts seed data into the database"""
     seed_db()
     click.echo("Seeded the database.")
 
@@ -65,16 +63,18 @@ def get_config(filename="database.ini", section="postgresql"):
 
 def get_db():
     """Attempt to connect to database and attach to global app"""
-    if "db" not in g:
+    if ("db" not in g) or ("cur" not in g):
         db_config = get_config()
-        g.db = psycopg2.connect(**db_config)
-
-    return g.db
+        g.db = psycopg2.connect(**db_config) # db connection
+        g.cur = g.db.cursor() # db operation cursor
+    return g.db, g.cur
 
 
 def close_db(e=None):
     """Close database connection"""
+    cur = g.pop("cur", None)
+    if cur is not None:
+        cur.close()
     db = g.pop("db", None)
     if db is not None:
         db.close()
-

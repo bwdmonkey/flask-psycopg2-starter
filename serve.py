@@ -23,4 +23,5 @@ app.logger.addHandler(handler)
 
 # run the application
 server = pywsgi.WSGIServer(("0.0.0.0", 8080), app)
+app.logger.info("Serving at %s", "http://0.0.0.0:8080")
 server.serve_forever()

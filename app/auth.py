@@ -1,7 +1,8 @@
 import functools
 
 from flask import (
-    Blueprint, flash, g, redirect, render_template, request, session, url_for
+    Blueprint, current_app, flash, g, redirect, render_template, request,
+    session, url_for
 )
 from werkzeug.security import check_password_hash, generate_password_hash
 
@@ -44,8 +45,10 @@ def register():
                 (username, generate_password_hash(password))
             )
             db.commit()
+            current_app.logger.info("User %s has been created.", username)
             return redirect(url_for('auth.login'))
 
+        current_app.logger.error(error)
         flash(error)
     return render_template('auth/register.html')
 
@@ -68,8 +71,12 @@ def login():
         if error is None:
             session.clear()
             session['user_id'] = user['id']
+            current_app.logger.info(
+                "User %s (%s) has logged in.", g.user['username'], g.user['id']
+            )
             return redirect(url_for('index'))
 
+        current_app.logger.error(error)
         flash(error)
 
     return render_template('auth/login.html')
@@ -77,6 +84,10 @@ def login():
 
 @bp.route('/logout')
 def logout():
+    if g.user is not None:
+        current_app.logger.info(
+            "User %s (%s) has signed out.", g.user['username'], g.user['id']
+        )
     session.clear()
     return redirect(url_for('index'))
 
@@ -86,7 +97,5 @@ def login_required(view):
     def wrapped_view(**kwargs):
         if g.user is None:
             return redirect(url_for('auth.login'))
-
         return view(**kwargs)
-
     return wrapped_view

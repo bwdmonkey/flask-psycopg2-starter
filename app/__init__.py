@@ -31,6 +31,7 @@ def create_app(test_config=None):
     @app.teardown_request
     def teardown_request(exception):
         if exception:
+            app.logger.error(exception)
             db.rollback_db()
 
     # a simple index page that says hello

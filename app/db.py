@@ -16,7 +16,6 @@ def init_app(app):
 
 def init_db():
     """Helper for init_db_command. Executes schema.sql"""
-    # global cursor
     db, cur = get_db()
     schema_path = os.path.join(os.getcwd(), 'sql/schema.sql')
     with current_app.open_resource(schema_path) as f:

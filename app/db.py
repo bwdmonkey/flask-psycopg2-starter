@@ -29,7 +29,7 @@ def init_db():
 def init_db_command():
     """Initializes database and create tables."""
     db_version = init_db()
-    click.echo("Database initialized. DB version:")
+    click.echo("Database Initialized. DB version:")
     click.echo("    {0}".format(db_version))
 
 def seed_db():

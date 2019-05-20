@@ -1,5 +1,6 @@
 import psycopg2
 import click
+import os
 from psycopg2 import extras
 from flask import current_app, g
 from flask.cli import with_appcontext
@@ -17,7 +18,8 @@ def init_db():
     """Helper for init_db_command. Executes schema.sql"""
     # global cursor
     db, cur = get_db()
-    with current_app.open_resource("schema.sql") as f:
+    schema_path = os.path.join(os.getcwd(), 'sql/schema.sql')
+    with current_app.open_resource(schema_path) as f:
         cur.execute(f.read())
     return cur.fetchone()['version'] # DB Version
 
@@ -33,7 +35,8 @@ def init_db_command():
 def seed_db():
     """Helper for seed_db_command. Executes seed.sql"""
     db, cur = get_db()
-    with current_app.open_resource("seed.sql") as f:
+    seed_path = os.path.join(os.getcwd(), 'sql/seed.sql')
+    with current_app.open_resource(seed_path) as f:
         cur.execute(f.read())
 
 

@@ -2,5 +2,5 @@
 if [ -f ./venv/bin/activate ]; then
     source ./venv/bin/activate
 fi
-shift
-eval $@
+shift   # drop first arg
+eval $@ # eval command from Makefile

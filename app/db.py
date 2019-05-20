@@ -69,6 +69,7 @@ def get_db():
     if ("db" not in g) or ("cur" not in g):
         db_config = get_config()
         g.db = psycopg2.connect(**db_config) # db connection
+        g.db.autocommit = True
         g.cur = g.db.cursor(cursor_factory=extras.DictCursor) # operation cursor
     return g.db, g.cur
 
@@ -81,4 +82,11 @@ def close_db(e=None):
     db = g.pop("db", None)
     if db is not None:
         db.commit()
+        db.close()
+
+def rollback_db(e=None):
+    """Rollback database connection"""
+    db = g.pop("db", None)
+    if db is not None:
+        db.rollback()
         db.close()

@@ -25,13 +25,18 @@ def create_app(test_config=None):
     except OSError:
         pass
 
+    from . import db
+    db.init_app(app)
+
+    @app.teardown_request
+    def teardown_request(exception):
+        if exception:
+            db.rollback_db()
+
     # a simple index page that says hello
     @app.route('/')
     def index():
         return 'Hello, World!'
-
-    from . import db
-    db.init_app(app)
 
     from . import auth
     app.register_blueprint(auth.bp)

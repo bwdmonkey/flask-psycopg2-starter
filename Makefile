@@ -22,3 +22,8 @@ post-install:
 .PHONY: clean
 clean:
 	rm -rf venv
+
+## test: run basic unit tests
+.PHONY: test
+test:
+	python -m pytest tests/

@@ -1,4 +1,6 @@
 SHELL=./make-venv
+export FLASK_APP=app
+export FLASK_ENV=development
 
 all: help
 
@@ -17,6 +19,11 @@ install:
 .PHONY: post-install
 post-install:
 	pip3 install -r requirements.txt
+	flask init-db
+
+## run: run development flask server
+run:
+	flask run
 
 ## clean: remove venv directory
 .PHONY: clean

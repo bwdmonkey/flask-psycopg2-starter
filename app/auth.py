@@ -72,7 +72,7 @@ def login():
             session.clear()
             session['user_id'] = user['id']
             current_app.logger.info(
-                "User %s (%s) has logged in.", g.user['username'], g.user['id']
+                "User %s (%s) has logged in.", user['username'], user['id']
             )
             return redirect(url_for('index'))
 
